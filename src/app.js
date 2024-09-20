@@ -2,26 +2,11 @@ const express = require("express");
 const app = express();
 
 
-app.get("/user",(req,res)=>{
-    res.send("Get user sucessfully")
-})
-
-app.post("/user",(req,res)=>{
+app.post("/user/:userId/:name",(req,res)=>{
     //posting data on DB
+    console.log(req.params);    
     res.send("post user data sucessfully")
 })
-
-app.patch("/user",(req,res)=>{
-    res.send("patch data to user sucessfully")
-})
-
-app.delete("/user",(req,res)=>{
-    res.send("delete user sucessfully")
-})
-
-app.use("/test/test1",(req,res)=>{
-    res.send("testing test2 server")
-})  
 
 // while writing routes maintain the order is importent
 
