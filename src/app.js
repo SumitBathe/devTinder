@@ -3,20 +3,19 @@ const app = express();
 
 app.use("/user",(req,res,next)=>{
     console.log("request Handler 1");
-    next();
-    res.send("response 1");
-    
-},[
-(req,res,next)=>{
-    console.log("Request Handler 2");
+    next(); 
+    //This is middleware
+}) 
+
+app.post("/user",(req,res,next)=>{
+    console.log("1 response in post ");
     next()
-}],
-(req,res)=>{
-    console.log("Request Handler 3");    
-}
-//we can make a chain of request handler 
-//we can store this chain in array or some request handler in array as well
-)    
+    //this is middleware
+},(req,res)=>{
+    console.log("2nd response in post");
+    res.send("Response Handller")
+    //This is actually a route Handler
+})
 
 app.listen(7777,()=>{
     console.log("Server running sucessfully");
