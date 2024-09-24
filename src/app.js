@@ -3,13 +3,11 @@ const {connectDB} = require("./config/database")
 const app = express();
 const User = require("./models/user")
 
+app.use(express.json())     // this is an middleware to conver json to jsobject given by express
+
 app.post("/signup",async (req,res)=>{
-    const user = new User({
-        firstName : "Sachin",
-        lastName : "Tendulkar",
-        emailId : "sachintendulkar@gmail.com",
-        age : 48
-    }) 
+    
+    const user = new User(req.body) 
     try{
         await user.save();
         res.send("user Added sucessfully")
