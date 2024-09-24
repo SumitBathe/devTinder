@@ -1,28 +1,32 @@
 const express = require("express");
+const {connectDB} = require("./config/database")
 const app = express();
-const {adminAuth, userAuth} = require("./middleware/auth")
+const User = require("./models/user")
 
-
-
-app.get("/user",(req,res)=>{
-    //  try {
-    //      //logic of connecting database sending response
-          throw new Error("fdajkfhakjfhasdlk somthing wrong");
-
-    //      //res.send("user fetched data")
-        
-    //  } catch (error) {
-    //      res.status(500).send("Something went wrong while fatching user")
-    //  }
-})
-
-app.use("/",(err,req,res,next)=>{
-    if(err){
-        res.status(500).send("something went wrong")
+app.post("/signup",async (req,res)=>{
+    const user = new User({
+        firstName : "Sachin",
+        lastName : "Tendulkar",
+        emailId : "sachintendulkar@gmail.com",
+        age : 48
+    }) 
+    try{
+        await user.save();
+        res.send("user Added sucessfully")
     }
+    catch(err){
+        res.status(400).send("User not added: "+err)
+    }     
 })
 
-app.listen(7777,()=>{
-    console.log("Server running sucessfully");
+
+connectDB().then(()=>{
+    console.log("connection establish to the database");
+    app.listen(7777,()=>{
+        console.log("Server running sucessfully");
+        
+    });
     
-});
+}).catch((err)=>{
+    console.log(err);    
+})
