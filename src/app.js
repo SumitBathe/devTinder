@@ -8,9 +8,14 @@ app.use(express.json())     // this is an middleware to conver json to jsobject 
 //API - signup for user
 app.post("/signup",async (req,res)=>{
     
-    const user = new User(req.body) 
+    const data = new User(req.body) 
     try{
-        await user.save();
+        const ALLOWED_DATA = ["firstName","lastName","emailId","password","age","photoUrl","gender","about","skills"]
+        isDataAllowed = Object.keys(req.body).every((key)=>ALLOWED_DATA.includes(key))
+        if(!isDataAllowed){
+            throw new Error("Data not allowed to signup")           
+        }
+        await data.save();
         res.send("user Added sucessfully")
     }
     catch(err){
@@ -58,24 +63,25 @@ app.delete("/user", async (req,res)=>{
 })
 
 //API - Update a User
-app.patch("/user", async (req,res)=>{
-    const userId = req.body.userId
+app.patch("/user/:userId", async (req,res)=>{
+    const userId = req.params?.userId
     const updateData = req.body
 
     try {
+        const UPDATE_ALLOWED = ["lastName","photoUrl","gender","age","about","skills"]
+        const isUpdateAllowed = Object.keys(updateData).every((k)=>           
+            UPDATE_ALLOWED.includes(k)
+        )
+        if(!isUpdateAllowed){
+            throw new Error("Update not allowed")
+        }
         const user = await User.findByIdAndUpdate({_id : userId},updateData,{returnDocument:"before",runValidators:true})
         console.log(user)
         res.send("User updated Successfully")
     } catch (error) {
-        res.status(400).send("somthing went wrong" + error.message)
+        res.status(400).send("somthing went wrong " + error.message)
     }
    
-    // try {
-    //     await User.findOneAndUpdate({emailId : userEmail},updateData)
-    //     res.send("User updated Successfully")
-    // } catch (error) {
-    //     res.status(400).send("somthing went wrong")
-    // }
 })
 
 connectDB().then(()=>{
