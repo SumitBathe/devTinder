@@ -5,6 +5,7 @@ const User = require("./models/user")
 
 app.use(express.json())     // this is an middleware to conver json to jsobject given by express
 
+//API - signup for user
 app.post("/signup",async (req,res)=>{
     
     const user = new User(req.body) 
@@ -17,45 +18,23 @@ app.post("/signup",async (req,res)=>{
     }     
 })
 
+//API - find user by emailId
 app.get("/user",async (req,res)=>{
-    const userId = req.body.id
+    const userId = req.body.emailId
 
     try {
-        const users = await User.findById({_id : userId})
-        if (!users) {
-            res.status(404).send("user not found")
-        } else {
+        const users = await User.find({emailId: userEmail})
+        if(users.length===0){
+            res.status(404).send("User not found")
+        }else{
             res.send(users)
-        }
+        }        
     } catch (error) {
         res.status(400).send("somthing went wrong")
     }
-
-    // try {
-    //     const users = await User.find({emailId: userEmail})
-    //     if(users.length===0){
-    //         res.status(404).send("User not found")
-    //     }else{
-    //         res.send(users)
-    //     }
-        
-    // } catch (error) {
-    //     res.status(400).send("somthing went wrong")
-    // }
-
-    // try {
-    //     const users = await User.findOne({emailId: userEmail})
-    //     if(!users){
-    //         res.status(404).send("User not found")
-    //     }else{
-    //         res.send(users)
-    //     }        
-    // } catch (error) {
-    //     res.status(400).send("somthing went wrong")
-    // }      
-    
 })
 
+//API - find users for feed
 app.get("/feed",async (req,res)=>{
     try {
         const users =await User.find({})
@@ -65,6 +44,38 @@ app.get("/feed",async (req,res)=>{
     }
 })
 
+//API - delete a user by id
+app.delete("/user", async (req,res)=>{
+    const userId = req.body.userId
+
+    try {
+        //await User.findByIdAndDelete({_id : userId}) // you can write like this as well
+        await User.findByIdAndDelete(userId)
+        res.send("User deleted succesfully")
+    } catch (error) {
+        res.status(400).send("somthing went wrong")
+    }   
+})
+
+//API - Update a User
+app.patch("/user", async (req,res)=>{
+    const userId = req.body.userId
+    const updateData = req.body
+
+    try {
+        await User.findByIdAndUpdate({_id : userId},updateData)
+        res.send("User updated Successfully")
+    } catch (error) {
+        res.status(400).send("somthing went wrong")
+    }
+   
+    // try {
+    //     await User.findOneAndUpdate({emailId : userEmail},updateData)
+    //     res.send("User updated Successfully")
+    // } catch (error) {
+    //     res.status(400).send("somthing went wrong")
+    // }
+})
 
 connectDB().then(()=>{
     console.log("connection establish to the database");
