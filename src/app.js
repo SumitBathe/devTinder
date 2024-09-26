@@ -2,22 +2,21 @@ const express = require("express");
 const {connectDB} = require("./config/database")
 const app = express();
 const User = require("./models/user")
+const {userValidation} = require("./utils/validation")
+const bcrypt = require("bcrypt")
 
 app.use(express.json())     // this is an middleware to conver json to jsobject given by express
 
 //API - signup for user
-app.post("/signup",async (req,res)=>{
-    
-    const data = new User(req.body) 
+app.post("/signup",async (req,res)=>{      
     try{
-        const ALLOWED_DATA = ["firstName","lastName","emailId","password","age","photoUrl","gender","about","skills"]
-        isDataAllowed = Object.keys(req.body).every((key)=>ALLOWED_DATA.includes(key))
-        if(!isDataAllowed){
-            throw new Error("Data not allowed to signup")           
-        }
-        if(req.body.skills.length>4){
-            throw new Error("Skills can not be more than 4.")
-        }
+        userValidation(req);
+        const {password,firstName,lastName,emailId} = req.body
+        const decryptedPassword = await bcrypt.hash(password,10);  
+        const data = new User({
+            firstName,lastName,emailId,password:decryptedPassword
+        })
+        
         await data.save();
         res.send("user Added sucessfully")
     }

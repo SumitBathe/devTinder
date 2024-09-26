@@ -29,7 +29,6 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         minLength: 8,
-        maxLength: 14,
         validate(value){
             if(!validator.isStrongPassword(value)){
                 throw new Error("Password is not strong")
@@ -52,7 +51,7 @@ const userSchema = new mongoose.Schema({
     photoUrl: {
         type: String,
         default : "https://st4.depositphotos.com/9998432/22670/v/450/depositphotos_226700594-stock-illustration-person-gray-photo-placeholder-man.jpg",
-        default: "https://st4.depositphotos.com/9998432/24360/v/450/depositphotos_243600690-stock-illustration-person-gray-photo-placeholder-girl.jpg",
+        //default: "https://st4.depositphotos.com/9998432/24360/v/450/depositphotos_243600690-stock-illustration-person-gray-photo-placeholder-girl.jpg",
         validate(value){
             if(!(validator.isURL(value))){
                 throw new Error("URl not valid ")
