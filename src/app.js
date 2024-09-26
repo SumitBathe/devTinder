@@ -25,6 +25,26 @@ app.post("/signup",async (req,res)=>{
     }     
 })
 
+//API - Login for register user
+app.post("/login", async (req,res)=>{
+    try {
+        const {password,emailId} = req.body;
+
+        const user =await User.findOne({emailId : emailId})
+        if(!user){
+            throw new Error("Invalid email credentials");            
+        }
+        const isRegisterUser =await bcrypt.compare(password, user.password)
+        if(!isRegisterUser){
+            throw new Error("Invalid password")
+        }else{
+            res.send("User Login Succesfully")
+        }
+    } catch (error) {
+       res.status(400).send("sommthing went Wrong "+error) 
+    }
+})
+
 //API - find user by emailId
 app.get("/user",async (req,res)=>{
     const userId = req.body.emailId
