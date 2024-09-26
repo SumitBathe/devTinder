@@ -15,6 +15,9 @@ app.post("/signup",async (req,res)=>{
         if(!isDataAllowed){
             throw new Error("Data not allowed to signup")           
         }
+        if(req.body.skills.length>4){
+            throw new Error("Skills can not be more than 4.")
+        }
         await data.save();
         res.send("user Added sucessfully")
     }
@@ -68,12 +71,15 @@ app.patch("/user/:userId", async (req,res)=>{
     const updateData = req.body
 
     try {
-        const UPDATE_ALLOWED = ["lastName","photoUrl","gender","age","about","skills"]
+        const UPDATE_ALLOWED = ["lastName","photoUrl","password","gender","age","about","skills"]
         const isUpdateAllowed = Object.keys(updateData).every((k)=>           
             UPDATE_ALLOWED.includes(k)
         )
         if(!isUpdateAllowed){
             throw new Error("Update not allowed")
+        }
+        if(req.body.skills.length>4){
+            throw new Error("Skills can not be more than 4.")
         }
         const user = await User.findByIdAndUpdate({_id : userId},updateData,{returnDocument:"before",runValidators:true})
         console.log(user)
