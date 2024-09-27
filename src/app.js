@@ -4,8 +4,11 @@ const app = express();
 const User = require("./models/user")
 const {userValidation} = require("./utils/validation")
 const bcrypt = require("bcrypt")
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
 
 app.use(express.json())     // this is an middleware to conver json to jsobject given by express
+app.use(cookieParser())     // this is an middleware to help reading cookies in req
 
 //API - signup for user
 app.post("/signup",async (req,res)=>{      
@@ -38,11 +41,31 @@ app.post("/login", async (req,res)=>{
         if(!isRegisterUser){
             throw new Error("Invalid password")
         }else{
+            const token = await jwt.sign({_id : user._id},"Dev@Tinder987")            
+            res.cookie('token',token)
             res.send("User Login Succesfully")
         }
     } catch (error) {
        res.status(400).send("sommthing went Wrong "+error) 
     }
+})
+
+app.get("/profile", async (req,res)=>{
+   try {
+    const {token} = req.cookies 
+    const isLoggedUser = await jwt.verify(token,"Dev@Tinder987")
+    const {_id} = isLoggedUser
+   
+    const user = await User.findById(_id)
+    if(!user){
+        throw new Error("User not found");
+        
+    }
+    res.send(user)
+    
+   } catch (error) {
+    res.status(400).send("somthing went wrong")
+   }
 })
 
 //API - find user by emailId
