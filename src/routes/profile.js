@@ -42,6 +42,11 @@ profileRouter.get("/profile",userAuth, async (req,res)=>{
     const user = req.user
     const isPasswordMatch = await user.passwordValidate(existingPassword)
 
+    if(!existingPassword || !newPassword){
+        throw new Error("Missing credentials");
+        
+    }
+
     if(!isPasswordMatch){
         throw new error("Password not correct")
     }else{
