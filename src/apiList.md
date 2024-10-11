@@ -12,7 +12,7 @@
 - PATCH /profile/password
 
 ## connectionRequest
-- POST /request/send
+- POST /request/intrested
 - GET /request/accept
 - GET /request/ignored
 - GET /request/reject
