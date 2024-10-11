@@ -1,6 +1,8 @@
 const express = require("express")
 const { userAuth } = require("../middleware/auth")
 const ConectionRequest = require("../models/conectionRequest")
+const { Connection, set } = require("mongoose")
+const User = require("../models/user")
 
 const userRouter = express.Router()
 const USER_SAFE_DATA = "firstName lastName age about gender skills photoUrl"
@@ -46,6 +48,41 @@ userRouter.get("/user/connection",userAuth, async (req,res)=>{
             message:"Yours Connections",
             data
         })
+        
+    } catch (error) {
+        res.status(400).send("Error "+error.message)
+    }
+})
+
+userRouter.get("/user/feed",userAuth, async (req,res)=>{
+    try {
+        const loggedInUser = req.user;
+
+        const getConnection = await ConectionRequest.find({
+            $or:[
+                {fromUserId:loggedInUser._id},
+                {toUserId:loggedInUser._id}
+            ]
+        }).select("fromUserId toUserId")
+
+        const hideUserFromFeed = new Set();
+
+        getConnection.forEach(req=>{
+            hideUserFromFeed.add(req.fromUserId.toString());
+            hideUserFromFeed.add(req.toUserId.toString());
+        })
+
+        const userFeed = await User.find({        
+            $and:[
+                {
+                    _id: {$nin:Array.from(hideUserFromFeed)}
+                },{
+                    _id:{$ne:loggedInUser._id}
+                }
+            ]        
+        }).select(USER_SAFE_DATA)
+
+        res.send(userFeed)
         
     } catch (error) {
         res.status(400).send("Error "+error.message)

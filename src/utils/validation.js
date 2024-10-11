@@ -18,9 +18,6 @@ const userValidation = (req)=>{
         if(!isDataAllowed){
             throw new Error("Data not allowed to signup")           
         }
-        if(req.body.skills.length>4){
-            throw new Error("Skills can not be more than 4.")
-        }
 }
 
 const validateUpdates = (req)=>{
